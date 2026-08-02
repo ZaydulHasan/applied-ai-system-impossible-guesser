@@ -1,0 +1,14 @@
+flowchart TD
+    A[Player Input: Guess] --> B[Streamlit UI - app.py]
+    B --> C[Game Logic - logic_utils.py]
+    C --> D[Guess History / Session State]
+    D --> E[Coach Agent - coach.py]
+    E --> E1[Analyze: narrow range from history]
+    E1 --> E2[Propose: compute midpoint + generate hint]
+    E2 --> E3[Evaluate: confidence score]
+    E3 -->|confidence high enough| F[Act: display tip in UI]
+    E3 -->|confidence too low / high stakes| G[Defer: tell player to proceed alone]
+    F --> H[Coach log - session_state.coach_log]
+    G --> H
+    H --> I[Test Harness - tests/test_harness.py]
+    I --> J[Reliability Summary printed to console]
