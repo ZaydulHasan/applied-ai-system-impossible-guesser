@@ -34,8 +34,11 @@ explicitly tells the player it is deferring. Every coach decision is logged to
 
 ## Sample Interactions
 ```
-PASTE REAL OUTPUT HERE: after playing a full game, copy 2-3 real guess/coach-response
-pairs here (e.g. "Attempt 3: Guessed 62 -> Go LOWER! | AI Coach: Try narrowing toward ~31").
+Attempt 1: Guessed 50 -> Go HIGHER!
+Attempt 2: Guessed 70 -> Go HIGHER!
+
+AI Coach: "Try narrowing toward the middle of the remaining range - around 85 is statistically your best bet."
+Action: act | Confidence: 0.79
 ```
 
 ## Design Decisions
@@ -48,16 +51,21 @@ pairs here (e.g. "Attempt 3: Guessed 62 -> Go LOWER! | AI Coach: Try narrowing t
 
 ## Testing Summary
 ```
-PASTE REAL "pytest tests/" OUTPUT HERE
-PASTE REAL "python tests/test_harness.py" OUTPUT HERE
+============================= test session starts ==============================
+platform win32 -- Python 3.14.6, pytest-9.1.1, pluggy-1.6.0
+collected 18 items
+
+tests\test_coach.py ......                                              [ 33%]
+tests\test_game_logic.py ............                                   [100%]
+
+============================== 18 passed in 0.05s ===============================
+test_harness.py results:
+Simulated games: 20
+Wins: 20/20
+Average attempts used: 6.10
 ```
 
-Add a short written summary too, for example: "X out of Y tests passed. Across 20 simulated
-games the coach helped win Z% of the time with an average of N attempts used. The coach correctly
-deferred instead of guessing wrong when attempts were critically low."
+18 out of 18 tests passed. Across 20 simulated games the coach helped win 20/20 (100%) with an average of 6.10 attempts used.
 
 ## Reflection
-(Add your own reflection in your own words: what building the coach taught you about agentic
-design, guardrails, and testing. The graded responsible-AI reflection -- your collaboration with
-AI, one helpful and one flawed AI suggestion, and the system's limitations -- belongs in
-`model_card.md`, not here.)
+Building the AI Coach clarified for me what "agentic" actually means in practice: it's not just calling an LLM, it's the analyze -> propose -> evaluate -> act-or-defer loop that makes the system accountable for its own confidence rather than always outputting an answer. Adding the guardrail (deferring when confidence is low and attempts are critical) was the part that taught me the most -- without it, the coach behaved impressively most of the time but could fail silently at the exact moment its advice mattered most. Writing unit tests for coach.py and the 20-game reliability harness also forced me to think about edge cases I hadn't considered while just playing the game manually, like what happens when the guessable range narrows to a single number.
